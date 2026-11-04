@@ -33,8 +33,6 @@ option(USEARCH_BUILD_BENCH_CPP "Compile a native benchmark in C++" ${USEARCH_IS_
 option(USEARCH_BUILD_LIB_C "Compile a native library for the C 99 interface" OFF)
 option(USEARCH_BUILD_TEST_C "Compile a test for the C 99 interface" OFF)
 option(USEARCH_BUILD_JNI "Compile JNI library for Java bindings" OFF)
-option(USEARCH_BUILD_WOLFRAM "Compile Wolfram Language bindings" OFF)
-option(USEARCH_BUILD_SQLITE "Compile separate SQLite extension" OFF)
 
 # Includes
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
@@ -446,22 +444,10 @@ if (${USEARCH_BUILD_TEST_CPP} OR ${USEARCH_BUILD_BENCH_CPP})
     add_subdirectory(cpp)
 endif ()
 
-if (${USEARCH_BUILD_WOLFRAM})
-    add_subdirectory(wolfram)
-endif ()
-
-if (${USEARCH_BUILD_WASM})
-    add_subdirectory(wasm)
-endif ()
-
 if (${USEARCH_BUILD_LIB_C} OR ${USEARCH_BUILD_TEST_C})
     add_subdirectory(c)
 endif ()
 
 if (${USEARCH_BUILD_JNI})
     add_subdirectory(java)
-endif ()
-
-if (${USEARCH_BUILD_SQLITE})
-    add_subdirectory(sqlite)
 endif ()
