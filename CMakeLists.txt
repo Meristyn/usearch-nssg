@@ -30,9 +30,9 @@ option(USEARCH_USE_JEMALLOC "Use JeMalloc for faster memory allocations" OFF)
 
 option(USEARCH_BUILD_TEST_CPP "Compile a native unit test in C++" ${USEARCH_IS_MAIN_PROJECT})
 option(USEARCH_BUILD_BENCH_CPP "Compile a native benchmark in C++" ${USEARCH_IS_MAIN_PROJECT})
-option(USEARCH_BUILD_LIB_C "Compile a native library for the C 99 interface" OFF)
-option(USEARCH_BUILD_TEST_C "Compile a test for the C 99 interface" OFF)
-option(USEARCH_BUILD_JNI "Compile JNI library for Java bindings" OFF)
+# option(USEARCH_BUILD_LIB_C "Compile a native library for the C 99 interface" OFF)
+# option(USEARCH_BUILD_TEST_C "Compile a test for the C 99 interface" OFF)
+# option(USEARCH_BUILD_JNI "Compile JNI library for Java bindings" OFF)
 
 # Includes
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
@@ -338,7 +338,7 @@ function (setup_target TARGET_NAME)
     endif ()
 
     target_include_directories(${TARGET_NAME} PRIVATE ${USEARCH_HEADER_INCLUDES})
-    set_target_properties(${TARGET_NAME} PROPERTIES CXX_STANDARD 17)
+    set_target_properties(${TARGET_NAME} PROPERTIES CXX_STANDARD 11)
 
     # On Windows, when using multi-configuration CMake builds, the paths will be nested, resulting in
     # "build_debug\Debug" on Windows instead of "build_debug". That's why we override all the configs to use the same
@@ -444,10 +444,10 @@ if (${USEARCH_BUILD_TEST_CPP} OR ${USEARCH_BUILD_BENCH_CPP})
     add_subdirectory(cpp)
 endif ()
 
-if (${USEARCH_BUILD_LIB_C} OR ${USEARCH_BUILD_TEST_C})
-    add_subdirectory(c)
-endif ()
-
-if (${USEARCH_BUILD_JNI})
-    add_subdirectory(java)
-endif ()
+# if (${USEARCH_BUILD_LIB_C} OR ${USEARCH_BUILD_TEST_C})
+#     add_subdirectory(c)
+# endif ()
+#
+# if (${USEARCH_BUILD_JNI})
+#     add_subdirectory(java)
+# endif ()
