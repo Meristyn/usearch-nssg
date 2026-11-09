@@ -1,4 +1,10 @@
+#Ignore the doxygen files
+Doxyfile
+/html
+/latex
+
 # Ignore all files without an extension
+playground
 
 # Temporary files
 .DS_Store
