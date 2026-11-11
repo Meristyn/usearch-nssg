@@ -3178,6 +3178,8 @@ class index_gt {
         typename callback_at = dummy_callback_t, //
         typename prefetch_at = dummy_prefetch_t  //
         >
+
+    //  Aquí está la llamada de choose_random_level
     add_result_t add(                                           //
         vector_key_t key, value_at&& value, metric_at&& metric, //
         index_update_config_t config = {},                      //
@@ -3215,6 +3217,8 @@ class index_gt {
         std::unique_lock<std::mutex> new_level_lock(global_mutex_);
         level_t max_level_copy = max_level_;                                             // Copy under lock
         compressed_slot_t entry_slot_copy = static_cast<compressed_slot_t>(entry_slot_); // Copy under lock
+
+        // new_target_level = 0
         level_t new_target_level = choose_random_level_(context.level_generator);
 
         // Make sure we are not overflowing
@@ -3226,7 +3230,7 @@ class index_gt {
         }
 
         // Allocate the neighbors
-        node_t new_node = node_make_(key, new_target_level);
+        node_t new_node = node_make_(key, new_target_level); // new_target_level = 0
         if (!new_node) {
             nodes_count_.fetch_sub(1);
             return result.failed("Out of memory!");
@@ -3242,7 +3246,7 @@ class index_gt {
         // Do nothing for the first element
         if (!old_size) {
             entry_slot_ = result.slot;
-            max_level_ = new_target_level;
+            max_level_ = new_target_level; //   Aquí max_level_ inicializa en 0
             return result;
         }
 
@@ -3280,7 +3284,7 @@ class index_gt {
         result.visited_members = context.iteration_cycles - result.visited_members;
 
         // Updating the entry point if needed
-        if (new_target_level > max_level_copy) {
+        if (new_target_level > max_level_copy) { // En esta modificación nunca entrará a este if si max_level_copy = new_target_level
             entry_slot_ = new_slot;
             max_level_ = new_target_level;
         }
@@ -4367,9 +4371,11 @@ class index_gt {
     }
 
     level_t choose_random_level_(std::default_random_engine& level_generator) const noexcept {
-        std::uniform_real_distribution<double> distribution(0.0, 1.0);
-        double r = -std::log(distribution(level_generator)) * pre_.inverse_log_connectivity;
-        return (level_t)r;
+        //std::uniform_real_distribution<double> distribution(0.0, 1.0);
+        //double r = -std::log(distribution(level_generator)) * pre_.inverse_log_connectivity;
+        //return (level_t)r;
+        (void)level_generator; //   Sugerencia de IA para que no me dé advertencias por parámetro no usado
+        return 0;
     }
 
     struct candidates_range_t;
