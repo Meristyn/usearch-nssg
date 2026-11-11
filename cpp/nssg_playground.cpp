@@ -2,6 +2,14 @@
 #include <iostream>
 #include <vector>
 #include <random>
+#include <cassert>
+
+/*
+Prueba#1 del issue2: Que ejecute aplanando HNSW
+Prueba#2 del issue2: Eliminar código obsoleto con max_level = 0
+
+Código para correr: g++ -std=c++11 -O2 -I./include -pthread cpp/nssg_playground.cpp -o playground && ./playground
+*/
 
 int main() {
     // Empaquetar: dimensiones (4), métrica (l2sq) y tipo escalar (f32)
@@ -20,23 +28,30 @@ int main() {
     // Extraer el índice del resultado
     auto index = std::move(index_result.index);
 
-    index.reserve(100);
+    index.reserve(1000);
 
     std::mt19937 rng(42);
     std::uniform_real_distribution<float> dist(0.0f, 1.0f);
 
-    for (int i = 0; i < 100; ++i) {
+    for (int i = 0; i < 1000; ++i) {
         std::vector<float> vector_data = { dist(rng), dist(rng), dist(rng), dist(rng) };
         index.add(i, vector_data.data());
     }
 
+    /* Issue#1
     std::vector<float> query = { 0.5f, 0.5f, 0.5f, 0.5f };
-    auto results = index.search(query.data(), 8);
+    auto results = index.search(query.data(), 5);
 
+    
     for (std::size_t j = 0; j < results.size(); ++j) {
         std::cout << "Vecino ID: " << results[j].member.key 
                   << " - Distancia: " << results[j].distance << std::endl;
     }
+    */
+
+    assert(index.max_level() == 0);
+
+    std::cout << "\nIndex.max_level(): " << index.max_level() << "\n";
 
     return 0;
 }
