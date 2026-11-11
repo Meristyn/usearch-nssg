@@ -6,7 +6,7 @@
 
 /*
 Prueba#1 del issue2: Que ejecute aplanando HNSW
-Siguiente paso: Optimizar memoria
+Prueba#2 del issue2: Eliminar código obsoleto con max_level = 0
 
 Código para correr: g++ -std=c++11 -O2 -I./include -pthread cpp/nssg_playground.cpp -o playground && ./playground
 */
@@ -38,13 +38,16 @@ int main() {
         index.add(i, vector_data.data());
     }
 
+    /* Issue#1
     std::vector<float> query = { 0.5f, 0.5f, 0.5f, 0.5f };
-    auto results = index.search(query.data(), 8);
+    auto results = index.search(query.data(), 5);
 
+    
     for (std::size_t j = 0; j < results.size(); ++j) {
         std::cout << "Vecino ID: " << results[j].member.key 
                   << " - Distancia: " << results[j].distance << std::endl;
     }
+    */
 
     assert(index.max_level() == 0);
 

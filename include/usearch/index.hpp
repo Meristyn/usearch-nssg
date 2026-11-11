@@ -3219,7 +3219,7 @@ class index_gt {
         compressed_slot_t entry_slot_copy = static_cast<compressed_slot_t>(entry_slot_); // Copy under lock
 
         // new_target_level = 0
-        level_t new_target_level = choose_random_level_(context.level_generator);
+        level_t new_target_level = 0;
 
         // Make sure we are not overflowing
         std::size_t capacity = nodes_capacity_.load();
@@ -3235,8 +3235,8 @@ class index_gt {
             nodes_count_.fetch_sub(1);
             return result.failed("Out of memory!");
         }
-        if (new_target_level <= max_level_copy)
-            new_level_lock.unlock();
+        //if (new_target_level <= max_level_copy) //  Siempre se cumple
+        new_level_lock.unlock();
 
         nodes_[old_size] = new_node;
         result.new_size = old_size + 1;
@@ -3246,7 +3246,7 @@ class index_gt {
         // Do nothing for the first element
         if (!old_size) {
             entry_slot_ = result.slot;
-            max_level_ = new_target_level; //   Aquí max_level_ inicializa en 0
+            max_level_ = 0; //   Aquí max_level_ inicializa en 0
             return result;
         }
 
@@ -3262,18 +3262,18 @@ class index_gt {
             entry_slot_copy, max_level_copy, new_target_level, context);
 
         // From `new_target_level` down - perform proper extensive search
-        for (level_t level = (std::min)(new_target_level, max_level_copy); level >= 0; --level) {
-            // TODO: Handle out of memory conditions
-            search_to_insert_(value, metric, prefetch, closest_slot, level, config.expansion, context);
-            candidates_view_t closest_view;
-            {
-                node_lock_t new_lock = node_lock_(new_slot);
-                neighbors_(new_node, level).clear();
-                closest_view = form_links_to_closest_(metric, new_slot, level, context);
-                closest_slot = closest_view[0].slot;
-            }
-            form_reverse_links_(metric, new_slot, closest_view, value, level, context);
+
+        // Eliminado for innecesario
+        level_t level = 0;
+        search_to_insert_(value, metric, prefetch, closest_slot, level, config.expansion, context);
+        candidates_view_t closest_view;
+        {
+            node_lock_t new_lock = node_lock_(new_slot);
+            neighbors_(new_node, level).clear();
+            closest_view = form_links_to_closest_(metric, new_slot, level, context);
+            closest_slot = closest_view[0].slot;
         }
+        form_reverse_links_(metric, new_slot, closest_view, value, level, context);
 
         // Normalize stats
         result.computed_distances = context.computed_distances - result.computed_distances;
@@ -3283,11 +3283,14 @@ class index_gt {
             context.computed_distances_in_reverse_refines - result.computed_distances_in_reverse_refines;
         result.visited_members = context.iteration_cycles - result.visited_members;
 
+        /*
         // Updating the entry point if needed
         if (new_target_level > max_level_copy) { // En esta modificación nunca entrará a este if si max_level_copy = new_target_level
             entry_slot_ = new_slot;
             max_level_ = new_target_level;
         }
+        */
+        
         return result;
     }
 
